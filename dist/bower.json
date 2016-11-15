@@ -1,0 +1,24 @@
+{
+  "name": "y-serviceworker",
+  "version": "1.0.0",
+  "homepage": "http://y-js.org",
+  "authors": [
+    "Kevin Jahns <kevin.jahns@rwth-aachen.de>"
+  ],
+  "description": "Service Worker Connector for Yjs (enables communication with a service worker)",
+  "main": "./y-serviceworker.js",
+  "keywords": [
+    "Yjs",
+    "OT",
+    "Collaboration",
+    "Synchronization",
+    "ShareJS",
+    "Coweb",
+    "Concurrency"
+  ],
+  "license": "MIT",
+  "ignore": [],
+  "dependencies": {
+    "yjs": "^12.0.0"
+  }
+}
