@@ -1,50 +1,36 @@
-# ServiceWorker Connector for [Yjs](https://github.com/y-js/yjs)
+# Web Worker Connector for [Yjs](https://github.com/y-js/yjs)
 
-It enables you to communicate with a service worker thread. Currently, the best use-case is
-to set up a service worker that persists changes using
-[y-indexeddb](https://github.com/y-js/y-indexeddb), and use y-serviceworker to communicate
-with it using the [postMessage interface](https://developer.mozilla.org/en-US/docs/Web/API/Client/postMessage).
-The service worker is supposed to propagate all changes to all users using another connector.
+It enables communication with a [SharedWorker](https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker/SharedWorker) thread.
+The Shared Worker is can handle the connections, and save changes using a persistent database (e.g. [y-indexeddb](https://github.com/y-js/y-indexeddb)),
+while the clients connect to the shared worker with improved performance. It also enables you to perform background tasks in the Shared Worker.
 
-We provide you with a free signaling server (it is used by default), but in production you should set up your own signaling server. You could use the [signalmaster](https://github.com/DadaMonad/signalmaster) from &yet, which is very easy to set up.
+In the future you may want set up a [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)
+that keeps the Shared Worker running even after the page is closed - thus enabling synchronization after the page is closed. But this is not yet supported - [see issue](https://github.com/whatwg/html/issues/411)
 
 ## Use it!
 Retrieve this with bower or npm.
 
 ##### NPM
-```
-npm install y-serviceworker --save
+```bash
+npm install y-webworker --save
 ```
 
 ##### Bower
-```
-bower install y-serviceworker --save
+```bash
+bower install y-webworker --save
 ```
 
 ### Example
 
-**Client:**
-```javascript
-// Register service worker - do this once
-if ('serviceWorker' in navigator) {
-  // service worker is supported by the browser
-  navigator.serviceWorker.register('yjs-service-worker.js', {scope: '../bower_components/y-serviceworker'}).then(function(registration) {
-    console.log('Yjs ServiceWorker registration successful')
-  }).catch(function(err) {
-    console.log('Yjs ServiceWorker registration failed: ', err)
-  })
-} else {
-  // you should use another connector instead
-}
-
-// connect to the service worker
+```js
+// Connect to the web worker
 Y({
   db: {
     name: 'memory'
   },
   connector: {
-    name: 'serviceworker',
-    scope: '../bower_components/y-serviceworker',
+    name: 'webworker',
+    url: '/bower_components/y-webworker/yjs-webworker.js',
     room: 'my room name'
   },
   sourceDir: '/bower_components', // location of the y-* modules
@@ -57,8 +43,12 @@ Y({
 }
 ```
 
+##### Modify yjs-webworker.js
+The default behavior of `yjs-webworker.js` is to use y-indexeddb, and connect to the default server using y-websockets-client.
+For productive systems you should copy & modify the file for your set-up. 
+
 ## License
-[y-serviceworker](https://github.com/y-js/y-serviceworker) is licensed under the [MIT License](./LICENSE).
+[y-webworker](https://github.com/y-js/y-webworker) is licensed under the [MIT License](./LICENSE).
 
 <kevin.jahns@rwth-aachen.de>
 

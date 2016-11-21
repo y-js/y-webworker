@@ -6,9 +6,9 @@ var runSequence = require('run-sequence').use(gulp)
 
 require('../yjs/gulpfile.helper.js')(gulp, {
   polyfills: [],
-  entry: './src/Serviceworker.js',
-  targetName: 'y-serviceworker.js',
-  moduleName: 'yServiceworker',
+  entry: './src/WebWorker.js',
+  targetName: 'y-webworker.js',
+  moduleName: 'yWebworker',
   specs: []
 })
 
