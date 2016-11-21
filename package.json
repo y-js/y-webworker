@@ -38,8 +38,7 @@
     "url": "https://github.com/y-js/y-webworker/issues"
   },
   "homepage": "http://y-js.org",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "gulp-uglify": "^2.0.0",
     "babel-eslint": "^4.1.2",
