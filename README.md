@@ -7,6 +7,11 @@ while the clients connect to the shared worker leveraging improved performance. 
 In the future you may want set up a [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)
 that keeps the Shared Worker running even after the page is closed - thus enabling synchronization after the page is closed. But this is not yet supported - [see issue](https://github.com/whatwg/html/issues/411)
 
+* Only the Shared Worker connects to the server / other clients (less connection overhead)
+* Works best with y-indexeddb
+* Faster start-up when multiple windows are open
+* Background tasks
+
 ## Use it!
 Retrieve this with bower or npm.
 
