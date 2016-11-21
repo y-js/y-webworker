@@ -1,8 +1,8 @@
 # Web Worker Connector for [Yjs](https://github.com/y-js/yjs)
 
 It enables communication with a [SharedWorker](https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker/SharedWorker) thread.
-The Shared Worker is can handle the connections, and save changes using a persistent database (e.g. [y-indexeddb](https://github.com/y-js/y-indexeddb)),
-while the clients connect to the shared worker with improved performance. It also enables you to perform background tasks in the Shared Worker.
+The Shared Worker can handle connections, and save changes using a persistent database (e.g. [y-indexeddb](https://github.com/y-js/y-indexeddb)),
+while the clients connect to the shared worker leveraging improved performance. You can also set it up to perform background tasks in the Shared Worker.
 
 In the future you may want set up a [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)
 that keeps the Shared Worker running even after the page is closed - thus enabling synchronization after the page is closed. But this is not yet supported - [see issue](https://github.com/whatwg/html/issues/411)

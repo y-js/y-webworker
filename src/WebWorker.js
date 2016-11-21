@@ -1,4 +1,4 @@
-/* global Y */
+/* global Y, SharedWorker */
 'use strict'
 
 // Thx to @jed for this script https://gist.github.com/jed/982883
@@ -50,7 +50,7 @@ function extend (Y) {
       })
     }
     destroy () {
-      
+      this.disconnect()
     }
     disconnect () {
       this.port.removeEventListener('message', this.messageEventListener)
