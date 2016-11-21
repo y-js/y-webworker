@@ -27,7 +27,7 @@ bower install y-webworker --save
 
 ### Example
 
-```js
+```javascript
 // Connect to the web worker
 Y({
   db: {

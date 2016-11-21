@@ -1,6 +1,6 @@
 {
   "name": "y-webworker",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Web Worker Connector for Yjs (enables communication with a Web Worker)",
   "main": "./src/WebWorker.js",
   "scripts": {
