@@ -13,34 +13,45 @@ function extend (Y) {
       if (options.room == null) {
         throw new Error('You must define a room name!')
       }
+      options.serviceworker = options.serviceworker || window['yjs-service-worker']
       if (options.serviceworker == null) {
-        throw new Error('You must specify a service worker')
+        throw new Error('You must specify the service worker!')
       }
       options.role = 'slave'
       super(y, options)
+      this.y.db.stopGarbageCollector()
       this.options = options
+      this.guid = generateGuid() // we send this unique id with every postMessage. Later it becomes the userId
       var self = this
-      navigator.serviceWorker.addEventListener('message', function (event) {
-        if (event.data.room === options.room && event.data.type === 'message') {
-          self.receiveMessage('serviceworker', event.data.message)
+      this.messageEventListener = function (event) {
+        if (event.data.room === options.room && (event.data.guid == null || event.data.guid === self.guid)) {
+          if (event.data.type === 'message') {
+            self.receiveMessage('serviceworker', JSON.parse(JSON.stringify(event.data.message)))
+          }
+          if (event.data.type === 'join') {
+            if (self.connections['serviceworker'] == null) {
+              self.userJoined('serviceworker', 'master')
+              self.whenSynced(function () {
+                self.setUserId(self.guid)
+              })
+            }
+          }
         }
-        if (event.data.room === options.room && event.data.type === 'join') {
-          self.userJoined('serviceworker', 'master')
-          self.setUserId(generateGuid())
-        }
-      })
+      }
+      navigator.serviceWorker.addEventListener('message', this.messageEventListener)
 
       this.options.serviceworker.then(function (registration) {
         if (registration == null) {
           throw new Error('You must register a service worker with the specified scope (' + options.scope + ')!')
         }
-        self.sw = registration.installing || registration.waiting || registration.active
+        self.sw = registration.active || registration.waiting || registration.installing
         function start () {
           if (self.sw.state === 'activated') {
             self.sw.postMessage({
               type: 'join',
               room: options.room,
-              options: options
+              auth: options.auth,
+              guid: self.guid
             })
             self.sw.removeEventListener('statechange', start)
           }
@@ -51,18 +62,26 @@ function extend (Y) {
         throw err
       })
     }
+    destroy () {
+      
+    }
     disconnect () {
+      this.removeEventListener('message', this.messageEventListener)
+      this.userLeft('serviceworker')
       this.sw.postMessage({
         type: 'leave',
-        room: this.options.room
+        room: this.options.room,
+        guid: this.guid
       })
       super.disconnect()
     }
     reconnect () {
+      this.addEventListener('message', this.messageEventListener)
       this.sw.postMessage({
         type: 'join',
         room: this.options.room,
-        options: this.options
+        auth: this.authInfo,
+        guid: this.guid
       })
       super.reconnect()
     }
@@ -73,7 +92,8 @@ function extend (Y) {
       this.sw.postMessage({
         type: 'message',
         room: this.options.room,
-        message: message
+        message: message,
+        guid: this.guid
       })
     }
     isDisconnected () {

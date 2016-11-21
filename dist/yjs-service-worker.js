@@ -16,18 +16,13 @@ const delegatedConnectorOptions = {
 
 class Serviceworker extends DelegatedConnector {
   constructor (y, options) {
-    var dOptions = {
-      name: 'websockets-client',
-      options: {
-        jsonp: false
-      }
-    }
+    var dOptions = Y.utils.copyObject(delegatedConnectorOptions)
     dOptions.room = options.room
     super(y, dOptions)
     this.swOptions = options
     addEventListener('message', event => {
       if (event.data.room === this.swOptions.room && event.data.type === 'message') {
-        this.receiveMessage(event.source.id, event.data.message, 'serviceworker')
+        this.receiveMessage(event.data.guid, event.data.message, 'serviceworker')
       }
     })
   }
@@ -42,19 +37,19 @@ class Serviceworker extends DelegatedConnector {
     super.receiveMessage(uid, message, source)
   }
   send (uid, message) {
-    clients.get(uid).then(c => {
-      if (c != null) {
+    var clientId = this.connections[uid].clientId
+    if (clientId != null) {
+      clients.get(clientId).then(c => {
         c.postMessage({
           type: 'message',
           room: this.swOptions.room,
-          message: message
+          message: message,
+          guid: uid
         })
-      } else {
-        super.send(uid, message)
-      }
-    }, () => {
+      })
+    } else {
       super.send(uid, message)
-    })
+    }
   }
   _broadcastSW (message) {
     clients.matchAll({includeUncontrolled: true, type: 'window'}).then(cs => {
@@ -63,7 +58,8 @@ class Serviceworker extends DelegatedConnector {
         c.postMessage({
           type: 'message',
           room: this.swOptions.room,
-          message: message
+          message: message,
+          guid: null
         })
       })
     })
@@ -83,7 +79,8 @@ addEventListener('message', event => {
       instances[event.data.room] = Y({
         connector: {
           name: 'serviceworker',
-          room: event.data.room
+          room: event.data.room,
+          auth: event.data.auth
         },
         db: {
           name: 'indexeddb',
@@ -94,13 +91,20 @@ addEventListener('message', event => {
     instances[event.data.room].then(y => {
       event.source.postMessage({
         type: 'join',
-        room: event.data.room
+        room: event.data.room,
+        guid: event.data.guid
       })
-      y.connector.userJoined(event.source.id, 'slave')
+      y.connector.userJoined(event.data.guid, 'slave')
+      y.connector.connections[event.data.guid].clientId = event.source.id
+      // reset auth if new auth data is supplied
+      if (event.data.auth != null) {
+        y.connector.resetAuth(event.data.auth)
+      }
+    })
+  } else if (event.data.room != null && event.data.type === 'leave') {
+    instances[event.data.room].then(y => {
+      y.connector.userLeft(event.data.guid)
     })
   }
-})
-
-addEventListener('activate', function (event) {
 })
 
