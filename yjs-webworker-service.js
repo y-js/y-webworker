@@ -61,12 +61,13 @@ var messageHandler = event => {
       })
     }
     instances[event.data.room].then(y => {
-      event.srcElement.postMessage({
+      var port = event.target
+      port.postMessage({
         type: 'join',
         room: event.data.room,
         guid: event.data.guid
       })
-      y.connector.userJoined(event.data.guid, 'slave', event.srcElement)
+      y.connector.userJoined(event.data.guid, 'slave', port)
       // reset auth if new auth data is supplied
       if (event.data.auth != null) {
         y.connector.resetAuth(event.data.auth)
