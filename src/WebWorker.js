@@ -50,29 +50,19 @@ function extend (Y) {
       })
     }
     destroy () {
-      this.disconnect()
-    }
-    disconnect () {
       this.port.removeEventListener('message', this.messageEventListener)
-      this.port.stop()
       this.userLeft('webworker')
       this.port.postMessage({
         type: 'leave',
         room: this.options.room,
         guid: this.guid
       })
-      super.disconnect()
+    }
+    disconnect () {
+      // do nothing
     }
     reconnect () {
-      this.port.addEventListener('message', this.messageEventListener)
-      this.port.start()
-      this.port.postMessage({
-        type: 'join',
-        room: this.options.room,
-        auth: this.authInfo,
-        guid: this.guid
-      })
-      super.reconnect()
+      // do nothing
     }
     send (uid, message) {
       this.broadcast(message)
