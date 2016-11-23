@@ -3,6 +3,7 @@ class Webworker extends Y[ConnectorConfig.name] {
   constructor (y, options) {
     var dOptions = Y.utils.copyObject(ConnectorConfig)
     dOptions.room = options.room
+    dOptions.auth = options.auth
     super(y, dOptions)
     this.swOptions = options
   }
