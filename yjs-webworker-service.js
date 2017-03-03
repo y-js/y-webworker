@@ -1,5 +1,5 @@
 
-class Webworker extends Y[ConnectorConfig.name] {
+class WebworkerConnector extends Y[ConnectorConfig.name] {
   constructor (y, options) {
     var dOptions = Y.utils.copyObject(ConnectorConfig)
     dOptions.room = options.room
@@ -45,7 +45,7 @@ class Webworker extends Y[ConnectorConfig.name] {
     }
   }
 }
-Y.extend('webworker', Webworker)
+Y.extend('webworker', WebworkerConnector)
 
 var instances = {}
 
